@@ -102,7 +102,7 @@ def room_status():
     conn = get_db_connection()
     now = datetime.now().strftime('%H:%M')
     query = """
-        SELECT r.room_name, a.start_time, a.end_time
+        SELECT r.id, r.room_name, a.start_time, a.end_time
         FROM rooms r
         LEFT JOIN acces_horaire a ON r.id = a.room_id
     """
@@ -119,6 +119,7 @@ def room_status():
         else:
             status = 'Pas d\'horaire ⏳'
         result.append({
+            'id': row['id'],
             'room_name': row['room_name'],
             'start_time': row['start_time'],
             'end_time': row['end_time'],
