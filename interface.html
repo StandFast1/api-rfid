@@ -34,7 +34,10 @@
   <h2>Gestion des Utilisateurs</h2>
   <div>
     <input type="text" id="userName" placeholder="Nom">
-    <input type="text" id="userRole" placeholder="Rôle">
+    <select id="userRole">
+      <option value="user">Utilisateur</option>
+      <option value="admin">Administrateur</option>
+    </select>
     <button onclick="addUser()">Ajouter</button>
   </div>
   <div id="userList"></div>
@@ -86,6 +89,7 @@
       const name = document.getElementById('userName').value;
       const role = document.getElementById('userRole').value;
       const uid = prompt('Badge UID :');
+      if (!name || !uid) return alert("Merci de remplir tous les champs.");
       const res = await fetch('/add_user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,18 +109,23 @@
 
     async function addRoom() {
       const room_name = document.getElementById('roomName').value;
-      await fetch('/api/add_room', {
+      if (!room_name) return alert("Nom de salle obligatoire");
+      const res = await fetch('/api/add_room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ room_name })
       });
-      fetchRooms();
+      if (res.ok) {
+        alert("Salle ajoutée !");
+        fetchRooms();
+      }
     }
 
     async function updateHours() {
       const room_id = document.getElementById('roomSelect').value;
       const start = document.getElementById('startTime').value;
       const end = document.getElementById('endTime').value;
+      if (!start || !end) return alert("Horaires requis");
       await fetch('/api/update_hours', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
