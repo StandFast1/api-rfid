@@ -3,22 +3,24 @@ from flask_cors import CORS
 import sqlite3
 import logging
 
-# Configuration de la journalisation
+# Configuration des logs
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 CORS(app)
 
-
+# Connection à la base de donnée
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
+# Permet la connexion à l'interface web
 @app.route('/')
 def web_interface():
     return send_from_directory('.', 'interface.html')
 
+# Permet de verifie les badges
 @app.route('/check_badge', methods=['POST'])
 def check_badge():
     uid = request.json.get('uid')
@@ -33,6 +35,7 @@ def check_badge():
     app.logger.info(f"[CHECK_BADGE] UID reconnu : {uid} - Utilisateur : {user['name']} - Rôle : {user['role']}")
     return jsonify({'access': True, 'role': user['role'], 'name': user['name']}), 200
 
+# Permet de rajouter des users
 @app.route('/add_user', methods=['POST'])
 def add_user():
     data = request.json
@@ -56,6 +59,7 @@ def add_user():
     finally:
         conn.close()
 
+# Permet de supprimer des users
 @app.route('/delete_user', methods=['POST'])
 def delete_user():
     uid = request.json.get('uid')
@@ -75,6 +79,7 @@ def delete_user():
     finally:
         conn.close()
 
+# Recupere tous les users 
 @app.route('/api/users')
 def get_users():
     conn = get_db_connection()
@@ -82,6 +87,7 @@ def get_users():
     conn.close()
     return jsonify([dict(u) for u in users])
 
+# Ajoute des salles
 @app.route('/api/add_room', methods=['POST'])
 def add_room():
     room_name = request.json.get('room_name')
@@ -101,6 +107,7 @@ def add_room():
     finally:
         conn.close()
 
+# Liste toutes les salles
 @app.route('/api/rooms')
 def get_rooms():
     conn = get_db_connection()
@@ -108,6 +115,7 @@ def get_rooms():
     conn.close()
     return jsonify([dict(r) for r in rooms])
 
+# Definition des horaires d'une salle
 @app.route('/api/update_hours', methods=['POST'])
 def update_hours():
     data = request.json
@@ -128,6 +136,7 @@ def update_hours():
     finally:
         conn.close()
 
+# Indique le status d'une salle (ferme ou ouverte)
 @app.route('/api/room_status')
 def room_status():
     conn = get_db_connection()
@@ -144,6 +153,7 @@ def room_status():
     conn.close()
     return jsonify([dict(r) for r in rooms])
 
+# Permet de supprimer une salle
 @app.route('/api/delete_room', methods=['POST'])
 def delete_room():
     data = request.json
@@ -165,5 +175,6 @@ def delete_room():
     finally:
         conn.close()
 
+# Lancement de l'application
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
