@@ -110,7 +110,7 @@ L’API est déployée sur **Render** :
 
 
 
-### 💼 Projet réalisé par : **[Ton Nom / Équipe]**
+### 💼 Projet réalisé par : **Groupe 15**
 
 ---
 
