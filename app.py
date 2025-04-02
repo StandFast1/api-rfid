@@ -14,6 +14,28 @@ def get_db_connection():
 def web_interface():
     return send_from_directory('.', 'interface.html')
 
+@app.route('/api/rooms')
+def get_rooms():
+    conn = get_db_connection()
+    rooms = conn.execute('SELECT * FROM rooms').fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rooms])
+
+@app.route('/api/add_room', methods=['POST'])
+def add_room():
+    data = request.get_json()
+    room_name = data.get('room_name')
+
+    if not room_name:
+        return jsonify({'error': 'Nom de salle manquant'}), 400
+
+    conn = get_db_connection()
+    conn.execute('INSERT INTO rooms (room_name) VALUES (?)', (room_name,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
+
 @app.route('/check_badge', methods=['POST'])
 def check_badge():
     uid = request.json.get('uid')
@@ -62,6 +84,20 @@ def delete_user():
 
     return jsonify({'success': True}), 200
 
+@app.route('/api/add_room', methods=['POST'])
+def add_room():
+    data = request.get_json()
+    room_name = data.get('room_name')
+
+    if not room_name:
+        return jsonify({'error': 'Nom de salle requis'}), 400
+
+    conn = get_db_connection()
+    conn.execute('INSERT INTO rooms (room_name) VALUES (?)', (room_name,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
