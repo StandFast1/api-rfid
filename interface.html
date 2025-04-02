@@ -50,7 +50,9 @@
 
   <div>
     <label>Choisir une salle : </label>
-    <select id="roomSelect"></select>
+    <select id="roomSelect">
+      <option value="">-- Aucune salle --</option>
+    </select>
     <label>Horaire de début : </label>
     <input type="time" id="startTime">
     <label>Horaire de fin : </label>
@@ -76,7 +78,7 @@
       const res = await fetch('/api/rooms');
       const rooms = await res.json();
       const select = document.getElementById('roomSelect');
-      select.innerHTML = '';
+      select.innerHTML = '<option value="">-- Aucune salle --</option>';
       rooms.forEach(room => {
         const opt = document.createElement('option');
         opt.value = room.id;
@@ -95,7 +97,12 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, role, uid })
       });
-      if (res.ok) fetchUsers();
+      if (res.ok) {
+        alert("Utilisateur ajouté avec succès ✅");
+        fetchUsers();
+      } else {
+        alert("Erreur lors de l'ajout de l'utilisateur ❌");
+      }
     }
 
     async function deleteUser(uid) {
@@ -116,8 +123,10 @@
         body: JSON.stringify({ room_name })
       });
       if (res.ok) {
-        alert("Salle ajoutée !");
+        alert("Salle ajoutée avec succès ✅");
         fetchRooms();
+      } else {
+        alert("Erreur lors de l'ajout de la salle ❌");
       }
     }
 
@@ -125,13 +134,13 @@
       const room_id = document.getElementById('roomSelect').value;
       const start = document.getElementById('startTime').value;
       const end = document.getElementById('endTime').value;
-      if (!start || !end) return alert("Horaires requis");
+      if (!start || !end || !room_id) return alert("Tous les champs doivent être remplis.");
       await fetch('/api/update_hours', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ room_id, start_time: start, end_time: end })
       });
-      alert('✅ Horaire modifié.');
+      alert('✅ Horaire modifié avec succès.');
     }
 
     fetchUsers();
