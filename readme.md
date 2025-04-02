@@ -45,6 +45,9 @@ Ce projet permet :
    - Les horaires définis pour la salle
 5. Si le badge est un admin, l’ESP32 permet aussi d’ajouter ou supprimer des badges.
 
+### 🖼️ Schéma du montage électronique
+![Schéma RFID](assets/rfid-schema.png)
+
 ---
 
 ## 📟 Code embarqué (ESP32)
@@ -108,6 +111,8 @@ L’API est déployée sur **Render** :
 
 
 ### 💼 Projet réalisé par : **[Ton Nom / Équipe]**
+
+---
 
 # 🚀 Badge RFID – Code embarqué ESP32-C3
 
