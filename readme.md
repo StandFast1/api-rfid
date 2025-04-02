@@ -102,10 +102,6 @@ Nous utilisons SQLite pour stocker les données localement :
 L’API est déployée sur **Render** :  
 [https://ton-url-render.onrender.com](https://api-refid.onrender.com)
 
-⚠️ À noter :
-- Le service Render gratuit se met en veille après 15 min d’inactivité.
-- Les données SQLite ne sont pas persistantes, il est recommandé de travailler en local pour les tests importants.
-
 ---
 
 
