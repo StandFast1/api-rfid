@@ -49,6 +49,9 @@
   <div id="userList"></div>
 
   <h2>Gestion des Salles</h2>
+  <h2>État des Salles</h2>
+  <div id="roomStatus"></div>
+
   <div>
     <input type="text" id="roomName" placeholder="Nom de la salle">
     <button onclick="addRoom()">Ajouter Salle</button>
@@ -105,6 +108,20 @@
         badgeDiv.appendChild(div);
       });
     }
+
+    async function fetchRoomStatus() {
+      const res = await fetch('/api/room_status');
+      const rooms = await res.json();
+      const div = document.getElementById('roomStatus');
+      div.innerHTML = '';
+      rooms.forEach(room => {
+        const r = document.createElement('div');
+        r.className = 'room-item';
+        r.textContent = `${room.room_name} | ${room.start_time || '--:--'} → ${room.end_time || '--:--'} | ${room.status}`;
+        div.appendChild(r);
+      });
+    }
+
 
     async function addUser() {
       const name = document.getElementById('userName').value;
@@ -169,6 +186,7 @@
     fetchUsers();
     fetchRooms();
     fetchBadges();
+    fetchRoomStatus();
   </script>
 </body>
 </html>

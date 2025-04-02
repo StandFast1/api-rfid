@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -95,6 +96,36 @@ def update_hours():
     conn.commit()
     conn.close()
     return jsonify({'success': True})
+
+@app.route('/api/room_status')
+def room_status():
+    conn = get_db_connection()
+    now = datetime.now().strftime('%H:%M')
+    query = """
+        SELECT r.room_name, a.start_time, a.end_time
+        FROM rooms r
+        LEFT JOIN acces_horaire a ON r.id = a.room_id
+    """
+    rows = conn.execute(query).fetchall()
+    conn.close()
+
+    result = []
+    for row in rows:
+        if row['start_time'] and row['end_time']:
+            if row['start_time'] <= now <= row['end_time']:
+                status = 'Ouverte ✅'
+            else:
+                status = 'Fermée ❌'
+        else:
+            status = 'Pas d\'horaire ⏳'
+        result.append({
+            'room_name': row['room_name'],
+            'start_time': row['start_time'],
+            'end_time': row['end_time'],
+            'status': status
+        })
+
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
