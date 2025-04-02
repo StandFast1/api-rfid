@@ -127,5 +127,21 @@ def room_status():
 
     return jsonify(result)
 
+@app.route('/api/delete_room', methods=['POST'])
+def delete_room():
+    data = request.json
+    room_id = data.get('room_id')
+    if not room_id:
+        return jsonify({'error': 'room_id manquant'}), 400
+
+    conn = get_db_connection()
+    conn.execute('DELETE FROM acces_horaire WHERE room_id = ?', (room_id,))
+    conn.execute('DELETE FROM rooms WHERE id = ?', (room_id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

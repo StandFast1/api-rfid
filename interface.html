@@ -117,7 +117,9 @@
       rooms.forEach(room => {
         const r = document.createElement('div');
         r.className = 'room-item';
-        r.textContent = `${room.room_name} | ${room.start_time || '--:--'} → ${room.end_time || '--:--'} | ${room.status}`;
+        r.innerHTML = `${room.room_name} | ${room.start_time || '--:--'} → ${room.end_time || '--:--'} | ${room.status} 
+          <button onclick="deleteRoom(${room.id})" style="background-color: #dc3545; margin-left: 10px;">❌</button>`;
+
         div.appendChild(r);
       });
     }
@@ -182,6 +184,25 @@
       });
       alert('✅ Horaire modifié avec succès.');
     }
+
+    async function deleteRoom(room_id) {
+      if (!confirm("Êtes-vous sûr de vouloir supprimer cette salle ?")) return;
+
+      const res = await fetch('/api/delete_room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_id })
+      });
+
+      if (res.ok) {
+        alert("Salle supprimée avec succès ✅");
+        fetchRooms();
+        fetchRoomStatus();
+      } else {
+        alert("Erreur lors de la suppression de la salle ❌");
+      }
+    }
+
 
     fetchUsers();
     fetchRooms();
