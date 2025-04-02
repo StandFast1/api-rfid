@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion RFID</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h2 {
+      text-decoration: underline;
+    }
+    input, select, button {
+      margin: 5px;
+      padding: 5px;
+    }
+    .user-item, .room-item {
+      margin-bottom: 5px;
+      background: #f7f7f7;
+      padding: 8px;
+    }
+    .user-item button, .room-item button {
+      margin-left: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Gestion des Utilisateurs</h2>
+  <div>
+    <input type="text" id="userName" placeholder="Nom">
+    <input type="text" id="userRole" placeholder="Rôle">
+    <button onclick="addUser()">Ajouter</button>
+  </div>
+  <div id="userList"></div>
+
+  <h2>Gestion des Salles</h2>
+  <div>
+    <input type="text" id="roomName" placeholder="Nom de la salle">
+    <button onclick="addRoom()">Ajouter Salle</button>
+  </div>
+
+  <div>
+    <label>Choisir une salle : </label>
+    <select id="roomSelect"></select>
+    <label>Horaire de début : </label>
+    <input type="time" id="startTime">
+    <label>Horaire de fin : </label>
+    <input type="time" id="endTime">
+    <button onclick="updateHours()">Modifier Horaire</button>
+  </div>
+
+  <script>
+    async function fetchUsers() {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      const container = document.getElementById('userList');
+      container.innerHTML = '';
+      users.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'user-item';
+        div.innerHTML = `${user.name} - ${user.role} <button onclick="deleteUser('${user.badgeuid}')">Supprimer</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    async function fetchRooms() {
+      const res = await fetch('/api/rooms');
+      const rooms = await res.json();
+      const select = document.getElementById('roomSelect');
+      select.innerHTML = '';
+      rooms.forEach(room => {
+        const opt = document.createElement('option');
+        opt.value = room.id;
+        opt.textContent = room.room_name;
+        select.appendChild(opt);
+      });
+    }
+
+    async function addUser() {
+      const name = document.getElementById('userName').value;
+      const role = document.getElementById('userRole').value;
+      const uid = prompt('Badge UID :');
+      const res = await fetch('/add_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, role, uid })
+      });
+      if (res.ok) fetchUsers();
+    }
+
+    async function deleteUser(uid) {
+      const res = await fetch('/delete_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid })
+      });
+      if (res.ok) fetchUsers();
+    }
+
+    async function addRoom() {
+      const room_name = document.getElementById('roomName').value;
+      await fetch('/api/add_room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_name })
+      });
+      fetchRooms();
+    }
+
+    async function updateHours() {
+      const room_id = document.getElementById('roomSelect').value;
+      const start = document.getElementById('startTime').value;
+      const end = document.getElementById('endTime').value;
+      await fetch('/api/update_hours', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_id, start_time: start, end_time: end })
+      });
+      alert('✅ Horaire modifié.');
+    }
+
+    fetchUsers();
+    fetchRooms();
+  </script>
+</body>
+</html>

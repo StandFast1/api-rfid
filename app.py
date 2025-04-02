@@ -11,8 +11,8 @@ def get_db_connection():
     return conn
 
 @app.route('/')
-def index():
-    return "Bienvenue sur l'API RFID hébergée sur Render"
+def web_interface():
+    return send_from_directory('.', 'interface.html')
 
 @app.route('/check_badge', methods=['POST'])
 def check_badge():
@@ -61,6 +61,7 @@ def delete_user():
         return jsonify({'success': False, 'reason': 'Badge introuvable'}), 404
 
     return jsonify({'success': True}), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
