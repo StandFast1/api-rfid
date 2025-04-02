@@ -9,8 +9,8 @@
 #define RST_PIN 3
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
-const char* ssid = "Bbox-CCC4FEF1";  // Ajouter votre Wifi ; attention 2.4GHz 
-const char* password = "Lsxnx4DM!qA=KNYV";  // Ajouter votre code wifi
+const char* ssid = "Votre id";  // Ajouter votre Wifi ; attention 2.4GHz 
+const char* password = "votre mdp";  // Ajouter votre code wifi
 const char* base_url = "https://api-refid.onrender.com";  // URL de l'API
 const char* admin_pin = "1234";  // Code PIN à valider pour admin
 
