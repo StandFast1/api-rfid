@@ -28,9 +28,15 @@
       padding: 5px 10px;
       cursor: pointer;
     }
+    #badgeList {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
+  <h2>Badges Enregistrés</h2>
+  <div id="badgeList"></div>
+
   <h2>Gestion des Utilisateurs</h2>
   <div>
     <input type="text" id="userName" placeholder="Nom">
@@ -41,9 +47,6 @@
     <button onclick="addUser()">Ajouter</button>
   </div>
   <div id="userList"></div>
-
-  <h3>Badges Enregistrés</h3>
-  <div id="badgeList"></div>
 
   <h2>Gestion des Salles</h2>
   <div>
@@ -67,22 +70,13 @@
     async function fetchUsers() {
       const res = await fetch('/api/users');
       const users = await res.json();
-
-      const userContainer = document.getElementById('userList');
-      const badgeContainer = document.getElementById('badgeList');
-      userContainer.innerHTML = '';
-      badgeContainer.innerHTML = '';
-
+      const container = document.getElementById('userList');
+      container.innerHTML = '';
       users.forEach(user => {
         const div = document.createElement('div');
         div.className = 'user-item';
         div.innerHTML = `${user.name} - ${user.role} <button onclick="deleteUser('${user.badgeuid}')">Supprimer</button>`;
-        userContainer.appendChild(div);
-
-        const badgeDiv = document.createElement('div');
-        badgeDiv.className = 'user-item';
-        badgeDiv.textContent = `UID: ${user.badgeuid}`;
-        badgeContainer.appendChild(badgeDiv);
+        container.appendChild(div);
       });
     }
 
@@ -99,6 +93,19 @@
       });
     }
 
+    async function fetchBadges() {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      const badgeDiv = document.getElementById('badgeList');
+      badgeDiv.innerHTML = '';
+      users.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'user-item';
+        div.textContent = `UID: ${user.badgeuid}`;
+        badgeDiv.appendChild(div);
+      });
+    }
+
     async function addUser() {
       const name = document.getElementById('userName').value;
       const role = document.getElementById('userRole').value;
@@ -112,6 +119,7 @@
       if (res.ok) {
         alert("Utilisateur ajouté avec succès ✅");
         fetchUsers();
+        fetchBadges();
       } else {
         alert("Erreur lors de l'ajout de l'utilisateur ❌");
       }
@@ -123,7 +131,10 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid })
       });
-      if (res.ok) fetchUsers();
+      if (res.ok) {
+        fetchUsers();
+        fetchBadges();
+      }
     }
 
     async function addRoom() {
@@ -157,6 +168,7 @@
 
     fetchUsers();
     fetchRooms();
+    fetchBadges();
   </script>
 </body>
 </html>
